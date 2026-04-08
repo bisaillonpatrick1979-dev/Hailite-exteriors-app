@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hailite Exteriors - Pro App</title>
+    <style>
+        :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 10px; }
+        .container { max-width: 1050px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        
+        .logo-container { text-align: center; margin-bottom: 10px; }
+        #company-logo { max-height: 120px; max-width: 250px; display: none; margin: 0 auto 10px auto; }
+        .logo-upload-btn { background: #ecf0f1; color: #7f8c8d; padding: 8px 15px; border-radius: 5px; border: 1px dashed #bdc3c7; cursor: pointer; font-size: 12px; display: inline-block; }
+
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; }
+        .tab-btn { flex: 1; padding: 15px; text-align: center; background: #e0e6ed; cursor: pointer; border-radius: 8px; font-weight: bold; font-size: 16px; color: #555; transition: 0.2s; border: 2px solid transparent; }
+        .tab-btn:hover { background: #d1d8e0; }
+        .tab-btn.active { background: white; color: var(--primary); border-color: var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+
+        .header-info { text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--primary); padding-bottom: 20px; }
+        .header-info h1 { color: var(--primary); margin: 0 0 10px 0; }
+        .header-info p { margin: 5px 0; color: #34495e; font-size: 16px; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .address-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; grid-column: span 2; }
+        
+        label { font-weight: bold; display: block; margin-bottom: 5px; color: var(--primary); }
+        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 13px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        th { background: var(--primary); color: white; padding: 10px; text-align: left; }
+        td { border-bottom: 1px solid #ddd; padding: 6px; vertical-align: middle; }
+        .row-total { font-weight: bold; }
+        
+        .supplier-select, .category-select, .mat-select, .custom-input, .color-input { margin-bottom: 5px; }
+        .color-input { border-left: 3px solid var(--secondary); background-color: #f8fbfe; }
+        
+        .labor-section { margin-top: 20px; padding: 15px; background: #e8f4f8; border-radius: 8px; border-left: 4px solid var(--secondary); }
+        .subtotal-row { font-weight: bold; font-size: 14px; color: #555; background: #f9f9f9; }
+        .total-row { font-weight: bold; background: #ecf0f1; font-size: 18px; }
+        .deposit-row { font-weight: bold; font-size: 16px; color: var(--danger); }
+        .balance-row { font-weight: bold; font-size: 18px; color: var(--success); background: #eafaf1; }
+
+        .legal-section { margin-top: 30px; padding: 15px; background: #f9f9f9; border-left: 4px solid var(--primary); }
+        .legal-text { font-size: 12px; color: #555; line-height: 1.6; width: 100%; background: #fff; padding: 10px; border: 1px solid #eee; }
+
+        .declaration-box { margin-top: 20px; padding: 15px; background: #fff9e6; border: 1px solid #ffeeba; border-radius: 8px; font-size: 13px; color: #856404; font-style: italic; line-height: 1.4; }
+
+        button { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-add { background: var(--secondary); color: white; width: 100%; margin-top: 10px; font-size: 14px; }
+        .btn-gen { background: var(--success); color: white; width: 100%; font-size: 18px; margin-top: 30px; padding: 15px; }
+        .btn-email { background: #5d6d7e; color: white; width: 100%; font-size: 16px; margin-top: 10px; padding: 12px; }
+        .btn-del { background: var(--danger); color: white; padding: 6px 10px; font-size: 11px; margin-top: 4px;}
+        .btn-lang { background: #95a5a6; color: white; float: right; margin-bottom: 10px; }
+        .btn-reset { background: transparent; color: #7f8c8d; border: 1px solid #ccc; width: auto; font-size: 11px; margin-top: 10px; float: right; padding: 5px 10px; }
+        .btn-lock { background: var(--success); color: white; padding: 8px 12px; width: auto; margin: 0; }
+        .btn-edit { background: var(--warning); color: white; padding: 6px 10px; font-size: 12px; width: auto; margin: 0; }
+
+        .sig-container { border: 2px dashed #bdc3c7; background: #fafafa; margin-top: 5px; border-radius: 8px; position: relative; }
+        canvas { width: 100%; height: 150px; touch-action: none; cursor: crosshair; }
+
+        @media print {
+            .no-print, button, .tabs, .logo-upload-btn { display: none !important; }
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: 100%; }
+            select { display: none !important; }
+            input, textarea { border: none; background: transparent; padding: 0; resize: none; overflow: hidden; }
+            canvas { border: 1px solid #ccc; }
+            #company-logo { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button class="btn-lang no-print" onclick="toggleLanguage()">Switch to English</button>
+    <div style="clear:both;"></div>
+
+    <div class="logo-container">
+        <img id="company-logo" src="#" alt="Logo">
+        <label for="logo-input" class="logo-upload-btn no-print" id="lbl-upload">📷 Ajouter votre logo</label>
+        <input type="file" id="logo-input" accept="image/*" style="display: none;" onchange="loadLogo(event)">
+    </div>
+
+    <div class="tabs no-print">
+        <div class="tab-btn active" id="tab-est" onclick="switchMode('estimate')">📝 Mode Estimation / Facture</div>
+        <div class="tab-btn" id="tab-contract" onclick="switchMode('contract')">⚖️ Mode Contrat Complet</div>
+    </div>
+    
+    <div class="header-info">
+        <h1 id="main-title">Hailite Exteriors - Estimation</h1>
+        <p><strong>Patrick Bisaillon</strong></p>
+        <p>12 Abalone Crescent N.E., Calgary, AB T2A 6W6</p>
+        <p>Tel: 587-432-8625</p>
+        <p>Email: hailiteexteriors@gmail.com</p>
+    </div>
+
+    <div class="grid">
+        <div><label id="lbl-client">Client</label><input type="text" id="client-name" placeholder="Nom du client"></div>
+        <div><label id="lbl-client-phone">Téléphone</label><input type="tel" placeholder="403-000-0000"></div>
+        <div style="grid-column: span 2;">
+            <label id="lbl-address-title">Adresse de chantier</label>
+            <div class="address-grid">
+                <input type="text" id="inp-street" placeholder="Rue">
+                <input type="text" id="inp-city" placeholder="Ville">
+                <input type="text" id="inp-prov" value="AB">
+                <input type="text" id="inp-pc" placeholder="Code Postal">
+            </div>
+        </div>
+        <div style="grid-column: span 2;"><label id="lbl-client-email">Email</label><input type="email" id="client-email" placeholder="client@email.com"></div>
+    </div>
+
+    <h3 id="lbl-mat-title" style="color: var(--primary); margin-top: 30px;">Détails des Matériaux</h3>
+    
+    <table id="material-table">
+        <thead>
+            <tr>
+                <th id="th-item" style="width: 45%;">Sélection des Produits</th>
+                <th id="th-unit" style="width: 12%;">Unité</th>
+                <th id="th-qty" style="width: 13%;">Qté</th>
+                <th id="th-uprice-mat" style="width: 15%;">Prix/U (CAD)</th>
+                <th id="th-total" style="width: 10%;">Total</th>
+                <th class="no-print" style="width: 5%;"></th>
+            </tr>
+        </thead>
+        <tbody id="mat-body"></tbody>
+    </table>
+    <button class="btn-add no-print" onclick="addRow()">+ Ajouter un matériel</button>
+    <button class="btn-reset no-print" onclick="resetMemory()">Réinitialiser la mémoire des prix</button>
+    <div style="clear:both;"></div>
+
+    <div class="labor-section">
+        <h3 id="lbl-labor-title">Main-d'œuvre (Installation)</h3>
+        <div class="grid" style="margin-bottom: 0;">
+            <div><label id="lbl-labor-area">Surface totale (pi²)</label><input type="number" id="labor-qty" placeholder="0" onfocus="this.select()" oninput="calculate()"></div>
+            <div><label id="lbl-labor-rate">Prix d'installation ($ CAD / pi²)</label><input type="number" id="labor-rate" placeholder="0.00" step="0.01" onfocus="this.select()" oninput="calculate()"></div>
+        </div>
+    </div>
+
+    <table>
+        <tfoot>
+            <tr class="subtotal-row"><td style="text-align:right; padding-right: 20px; width: 85%;" id="lbl-sub-mat">Total Matériaux :</td><td id="subtotal-mat">0.00 $</td></tr>
+            <tr class="subtotal-row"><td style="text-align:right; padding-right: 20px;" id="lbl-sub-lab">Total Main-d'œuvre :</td><td id="subtotal-lab">0.00 $</td></tr>
+            <tr class="total-row"><td style="text-align:right; padding-right: 20px;" id="lbl-grand-total">Grand Total (CAD) :</td><td id="grand-total">0.00 $</td></tr>
+            <tr class="deposit-row" id="row-deposit"><td style="text-align:right; padding-right: 20px;" id="lbl-deposit">Dépôt requis (Matériaux) :</td><td id="deposit-amount">0.00 $</td></tr>
+            <tr class="balance-row" id="row-balance"><td style="text-align:right; padding-right: 20px;" id="lbl-balance">Solde à payer à la fin :</td><td id="balance-amount">0.00 $</td></tr>
+        </tfoot>
+    </table>
+
+    <div id="contract-section" style="display: none;">
+        <div class="legal-section">
+            <h3 id="lbl-legal-title">Entente de Service et Engagement</h3>
+            <textarea id="legal-terms" class="legal-text" rows="20"></textarea>
+        </div>
+
+        <div class="declaration-box" id="decl-text">
+            En signant ci-dessous, le client confirme que toutes les informations fournies sont exactes. Le client reconnaît que cette entente est légalement contraignante en Alberta. En cas de défaut de paiement, Hailite Exteriors se réserve le droit d'exercer tous les recours légaux disponibles, incluant l'enregistrement d'un privilège de construction (lien) contre la propriété.
+        </div>
+
+        <div class="grid" style="margin-top:20px;">
+            <div><label id="lbl-sig-contractor">Hailite Exteriors</label><div class="sig-container"><canvas id="sig-pro"></canvas></div></div>
+            <div><label id="lbl-sig-client">Signature du Client</label><div class="sig-container"><canvas id="sig-client"></canvas></div></div>
+        </div>
+    </div>
+
+    <button class="btn-gen no-print" onclick="preparePrint()" id="btn-print-text">Générer le PDF</button>
+    <button class="btn-email no-print" onclick="sendEmail()" id="btn-email-text">✉️ Envoyer par courriel au client</button>
+</div>
+
+<script>
+    // Base de données simplifiée pour l'exemple
+    const database = {
+        "Roofmart": {
+            "Toiture": [{ name: "IKO Cambridge", unit: "sqft" }],
+            "Ventilation": [{ name: "Maximum Vent 301", unit: "unit" }],
+            "Solins": [{ name: "Drip Cap 1.5 po", unit: "linft" }],
+            "Revêtement": [{ name: "Royal Residential D4", unit: "sqft" }]
+        },
+        "Gentek": {
+            "Siding": [{ name: "Concord D4", unit: "sqft" }],
+            "Aluminium": [{ name: "Soffite Ventilé", unit: "sqft" }],
+            "Ventilation": [{ name: "Maximum Vent 301", unit: "unit" }],
+            "Solins": [{ name: "Drip Cap 1.5 po", unit: "linft" }]
+        }
+    };
+
+    let savedPrices = JSON.parse(localStorage.getItem('hailite_prices')) || {};
+    let currentLang = 'fr';
+    let currentMode = 'estimate';
+
+    const legalTexts = {
+        fr: `Cher client,\n\nMerci de faire confiance à Hailite Exteriors pour votre projet. Voici les détails de notre engagement :\n\n1. Échéancier : Nous planifions les travaux selon la météo.\n2. Imprévus : On vous avise de tout dommage caché.\n3. Paiement : Dépôt 100% matériaux requis.\n4. Propreté : On ramasse les clous à l'aimant et on remet tout en place.\n5. Garantie : 2 ans sur l'installation.`,
+        en: `Dear Client,\n\nThank you for choosing Hailite Exteriors. Our commitment:\n\n1. Timeline: Scheduled based on weather.\n2. Cleanup: We use magnets for nails and put everything back.\n3. Warranty: 2-year warranty on installation.`
+    };
+
+    function sendEmail() {
+        const email = document.getElementById('client-email').value;
+        const name = document.getElementById('client-name').value;
+        const total = document.getElementById('grand-total').innerText;
+        
+        if(!email) { alert("SVP inscris l'email du client avant."); return; }
+
+        const subject = encodeURIComponent(`Contrat Hailite Exteriors - ${name}`);
+        const body = encodeURIComponent(`Bonjour ${name},\n\nC'est un plaisir de travailler avec vous. Veuillez trouver ci-joint l'estimation/contrat pour votre projet de revêtement extérieur.\n\nMontant total : ${total}\n\nMerci de votre confiance!\n\nPatrick Bisaillon\nHailite Exteriors\n587-432-8625`);
+        
+        // Ouvre le client mail par défaut
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        
+        alert("Ton application de courriel va s'ouvrir. N'oublie pas d'y attacher le PDF que tu as téléchargé !");
+    }
+
+    function loadLogo(event) {
+        const logo = document.getElementById('company-logo');
+        logo.src = URL.createObjectURL(event.target.files[0]);
+        logo.style.display = 'block';
+    }
+
+    function switchMode(mode) {
+        currentMode = mode;
+        const isFr = currentLang === 'fr';
+        document.getElementById('tab-est').classList.toggle('active', mode === 'estimate');
+        document.getElementById('tab-contract').classList.toggle('active', mode === 'contract');
+        document.getElementById('contract-section').style.display = (mode === 'contract') ? 'block' : 'none';
+        document.getElementById('row-deposit').style.display = (mode === 'contract') ? 'table-row' : 'none';
+        document.getElementById('row-balance').style.display = (mode === 'contract') ? 'table-row' : 'none';
+        
+        document.getElementById('main-title').innerText = isFr ? 
+            (mode === 'estimate' ? "Hailite Exteriors - Estimation / Facture" : "Hailite Exteriors - Contrat et Engagement") :
+            (mode === 'estimate' ? "Hailite Exteriors - Estimate / Invoice" : "Hailite Exteriors - Service Agreement");
+    }
+
+    function addRow() {
+        const tbody = document.getElementById('mat-body');
+        const tr = document.createElement('tr');
+        let suppOptions = `<option value="">-- Fournisseur --</option>`;
+        Object.keys(database).forEach(supp => suppOptions += `<option value="${supp}">${supp}</option>`);
+        suppOptions += `<option value="custom">Autre / Custom</option>`;
+
+        tr.innerHTML = `
+            <td>
+                <div class="edit-mode">
+                    <select class="supplier-select no-print" onchange="loadCategories(this)">${suppOptions}</select>
+                    <select class="category-select no-print" style="display:none;" onchange="loadProducts(this)"></select>
+                    <select class="mat-select no-print" style="display:none;" onchange="handleProduct(this)"></select>
+                    <input type="text" class="custom-input no-print" style="display:none;" placeholder="Nom..." onfocus="this.select()">
+                    <div class="color-lock-group" style="display:none; gap: 5px; margin-top: 5px;">
+                        <input type="text" class="color-input no-print" style="flex:1;" placeholder="Couleur" onfocus="this.select()" oninput="calculate()">
+                        <button class="btn-lock no-print" onclick="lockRow(this)">✔</button>
+                    </div>
+                </div>
+                <div class="view-mode" style="display:none; align-items:center; justify-content:space-between;">
+                    <span class="display-prod-name" style="font-weight:bold;"></span>
+                    <button class="btn-edit no-print" onclick="unlockRow(this)">✎</button>
+                </div>
+            </td>
+            <td>
+                <select class="unit-select no-print" onchange="calculate()">
+                    <option value="sqft">pi²</option><option value="linft">pi lin</option>
+                    <option value="unit">unité</option><option value="box">boîte</option><option value="roll">rouleau</option>
+                </select>
+                <span class="print-unit-name" style="display:none;"></span>
+            </td>
+            <td><input type="number" class="col-qty" placeholder="0" onfocus="this.select()" oninput="calculate()"></td>
+            <td><input type="number" class="col-price-mat" placeholder="0.00" step="0.01" onfocus="this.select()" oninput="calculate()"></td>
+            <td class="row-total">0.00 $</td>
+            <td class="no-print"><button class="btn-del" onclick="this.closest('tr').remove(); calculate()">X</button></td>
+        `;
+        tbody.appendChild(tr);
+    }
+
+    function loadCategories(suppSel) {
+        const tr = suppSel.closest('tr'), catSel = tr.querySelector('.category-select'), matSel = tr.querySelector('.mat-select'), customInp = tr.querySelector('.custom-input'), supp = suppSel.value;
+        if (supp === "custom") { catSel.style.display = matSel.style.display = "none"; customInp.style.display = "block"; }
+        else if (supp !== "") {
+            customInp.style.display = matSel.style.display = "none"; catSel.style.display = "block";
+            let opt = `<option value="">-- Catégorie --</option>`;
+            Object.keys(database[supp]).forEach(c => opt += `<option value="${c}">${c}</option>`);
+            catSel.innerHTML = opt;
+        }
+        calculate();
+    }
+
+    function loadProducts(catSel) {
+        const tr = catSel.closest('tr'), supp = tr.querySelector('.supplier-select').value, matSel = tr.querySelector('.mat-select'), cat = catSel.value;
+        if (cat !== "") {
+            matSel.style.display = "block";
+            let opt = `<option value="">-- Produit --</option>`;
+            database[supp][cat].forEach(p => opt += `<option value="${p.name}" data-unit="${p.unit}">${p.name}</option>`);
+            matSel.innerHTML = opt;
+        }
+        calculate();
+    }
+
+    function handleProduct(matSel) {
+        const tr = matSel.closest('tr'), pName = matSel.value, colorGroup = tr.querySelector('.color-lock-group');
+        if (pName !== "") {
+            colorGroup.style.display = "flex";
+            tr.querySelector('.unit-select').value = matSel.options[matSel.selectedIndex].getAttribute('data-unit');
+            tr.querySelector('.col-price-mat').value = savedPrices[pName] || "";
+        }
+        calculate();
+    }
+
+    function lockRow(btn) { const tr = btn.closest('tr'); calculate(); tr.querySelector('.edit-mode').style.display = "none"; tr.querySelector('.view-mode').style.display = "flex"; }
+    function unlockRow(btn) { const tr = btn.closest('tr'); tr.querySelector('.view-mode').style.display = "none"; tr.querySelector('.edit-mode').style.display = "block"; }
+
+    function calculate() {
+        let totalMat = 0;
+        document.querySelectorAll('#mat-body tr').forEach(row => {
+            let pName = row.querySelector('.supplier-select').value === "custom" ? row.querySelector('.custom-input').value : row.querySelector('.mat-select').value;
+            let color = row.querySelector('.color-input').value.trim(), qty = parseFloat(row.querySelector('.col-qty').value) || 0, price = parseFloat(row.querySelector('.col-price-mat').value) || 0;
+            let sub = qty * price; row.querySelector('.row-total').innerText = sub.toFixed(2) + " $"; totalMat += sub;
+            if (pName) { savedPrices[pName] = price; localStorage.setItem('hailite_prices', JSON.stringify(savedPrices)); }
+            row.querySelector('.display-prod-name').innerText = pName + (color ? " - " + color : "");
+            const u = row.querySelector('.unit-select'); row.querySelector('.print-unit-name').innerText = u.options[u.selectedIndex].text;
+        });
+        let totalLab = (parseFloat(document.getElementById('labor-qty').value) || 0) * (parseFloat(document.getElementById('labor-rate').value) || 0);
+        document.getElementById('subtotal-mat').innerText = totalMat.toFixed(2) + " $ CAD";
+        document.getElementById('subtotal-lab').innerText = totalLab.toFixed(2) + " $ CAD";
+        document.getElementById('grand-total').innerText = (totalMat + totalLab).toFixed(2) + " $ CAD";
+        document.getElementById('deposit-amount').innerText = totalMat.toFixed(2) + " $ CAD";
+        document.getElementById('balance-amount').innerText = totalLab.toFixed(2) + " $ CAD";
+    }
+
+    function preparePrint() {
+        document.querySelectorAll('#mat-body tr').forEach(row => {
+            row.querySelector('.edit-mode').style.display = "none"; row.querySelector('.view-mode').style.display = "flex";
+            row.querySelector('.print-unit-name').style.display = "inline"; row.querySelector('.unit-select').style.display = "none";
+        });
+        window.print(); location.reload();
+    }
+
+    function setupCanvas(id) {
+        const c = document.getElementById(id), ctx = c.getContext('2d');
+        c.width = c.parentElement.offsetWidth; c.height = 150;
+        let draw = false;
+        const getP = (e) => { const r = c.getBoundingClientRect(); return { x: (e.clientX || e.touches[0].clientX) - r.left, y: (e.clientY || e.touches[0].clientY) - r.top }; };
+        c.addEventListener('mousedown', (e) => { draw = true; ctx.beginPath(); const p = getP(e); ctx.moveTo(p.x, p.y); });
+        c.addEventListener('touchstart', (e) => { draw = true; ctx.beginPath(); const p = getP(e); ctx.moveTo(p.x, p.y); e.preventDefault(); });
+        window.addEventListener('mousemove', (e) => { if (draw) { const p = getP(e); ctx.lineTo(p.x, p.y); ctx.stroke(); } });
+        window.addEventListener('touchmove', (e) => { if (draw) { const p = getP(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); } });
+        window.addEventListener('mouseup', () => draw = false); window.addEventListener('touchend', () => draw = false);
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'fr' ? 'en' : 'fr';
+        document.getElementById('legal-terms').value = legalTexts[currentLang];
+        document.getElementById('btn-email-text').innerText = currentLang === 'en' ? "✉️ Send by email to client" : "✉️ Envoyer par courriel au client";
+        switchMode(currentMode); calculate();
+    }
+
+    window.onload = () => { document.getElementById('legal-terms').value = legalTexts.fr; setupCanvas('sig-pro'); setupCanvas('sig-client'); switchMode('estimate'); };
+</script>
+</body>
+</html>
