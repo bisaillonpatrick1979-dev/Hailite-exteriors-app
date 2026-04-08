@@ -1,27 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hailite Exteriors Professional App</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Hailite Exteriors Professional Estimation and Contract App</title>
 </head>
 <body>
-    <header>
-        <h1>Welcome to Hailite Exteriors</h1>
-    </header>
-    <main>
-        <section>
-            <h2>Our Services</h2>
-            <p>We provide professional exterior services including roofing, windows, and more.</p>
-        </section>
-        <section>
-            <h2>Contact Us</h2>
-            <p>Email: info@hailiteexteriors.com</p>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2026 Hailite Exteriors</p>
-    </footer>
+    <h1>Welcome to the Hailite Exteriors Estimation App</h1>
+    <form id="estimation-form">
+        <h2>Material Calculation</h2>
+        <label for="material">Choose Material:</label>
+        <select id="material" name="material">
+            <option value="wood">Wood</option>
+            <option value="concrete">Concrete</option>
+            <option value="brick">Brick</option>
+        </select>
+        <label for="material-quantity">Quantity:</label>
+        <input type="number" id="material-quantity" name="material-quantity">
+
+        <h2>Labor Calculation</h2>
+        <label for="labor-hours">Labor Hours:</label>
+        <input type="number" id="labor-hours" name="labor-hours">
+        <label for="labor-rate">Labor Rate ($/hour):</label>
+        <input type="number" id="labor-rate" name="labor-rate">
+
+        <h2>Generate PDF</h2>
+        <button type="button" onclick="generatePDF()">Generate PDF</button>
+
+        <h2>Email Sending</h2>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email">
+        <button type="button" onclick="sendEmail()">Send Email</button>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        function generatePDF() {
+            // PDF generation logic
+            alert('PDF generated successfully!');
+        }
+        function sendEmail() {
+            // Email sending logic
+            alert('Email sent successfully!');
+        }
+    </script>
 </body>
 </html>
